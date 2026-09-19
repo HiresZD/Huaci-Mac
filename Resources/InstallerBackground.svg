@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
+  <!-- Finder overlays 96-point icons at (160,216) and (480,216).
+       Regenerate the PNG after editing; the SVG is not needed at build time. -->
+  <rect width="640" height="400" fill="#F7F9F6"/>
+  <path d="M0 0H640V124H332L320 136L308 124H0Z" fill="#285F50"/>
+  <g font-family="PingFang SC, Noto Sans CJK SC, sans-serif" text-anchor="middle">
+    <text x="320" y="62" font-size="29" fill="#FFFFFF">划词助手</text>
+    <text x="320" y="93" font-size="13" fill="#DAE9DF">翻译 · 查词 · 问 AI</text>
+    <text x="320" y="344" font-size="18" fill="#234A3E">将 Huaci 拖到右侧「应用程序」</text>
+    <text x="320" y="370" font-size="13" fill="#66786F">复制完成后，从「应用程序」打开</text>
+  </g>
+  <path d="M281 213H360M348 202L360 213L348 224" fill="none" stroke="#7A9A8B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M68 303H572" fill="none" stroke="#DFE7DF"/>
+</svg>
