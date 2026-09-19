@@ -16,7 +16,14 @@
 
 ## 安装
 
-当前提供**源码包**，需要在 Mac 上构建。脚本会生成适合当前 Mac 架构的应用，以及可拖拽安装的 DMG。
+在 [Releases 发布页](https://github.com/foreverdzx/Huaci-Mac/releases) 下载安装包或源码包：
+
+- **Apple Silicon（M 系列）Mac**：下载 `Huaci-Installer-arm64-v1.3.7.dmg`，双击打开，将 Huaci 拖到「应用程序」。启动后配置 API，并授予辅助功能权限。
+- **Intel Mac 或希望自行构建**：下载 `huaci-mac-source-1.3.7.zip`，按下面的步骤编译。构建脚本会生成适合当前 Mac 架构的应用和 DMG。
+
+安装包需要 macOS 13 或更高版本；本次提供的 DMG 仅含 ARM64 应用。
+
+从源码构建：
 
 1. 下载或克隆本仓库。升级前先退出正在运行的 Huaci，新源码请放在独立文件夹，不要合并覆盖旧版源码目录。
 2. 首次构建若尚未安装 Apple Command Line Tools，在终端运行 `xcode-select --install`，完成后继续。
@@ -67,7 +74,7 @@ bash Test.command
 
 脚本先检查完整 AppKit 应用的类型，再运行本地回归检查；不使用真实 API 密钥或发送接口请求。`Build.command` 会自动执行同一组检查。
 
-1.3.7 已完成源码复核和打包检查；本次交付环境没有 macOS SDK，**尚未完成本版原生编译和界面实测**。
+1.3.7 已完成源码复核和打包检查。提供的 DMG 已核对内置应用版本为 1.3.7（构建号 22），架构为 ARM64，最低系统要求为 macOS 13。本次交付环境没有 macOS SDK，**未在此环境重新编译或实际运行该安装包，未验证代码签名和公证状态**。
 
 | 目录 / 文件 | 用途 |
 | --- | --- |
