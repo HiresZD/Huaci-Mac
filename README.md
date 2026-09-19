@@ -1,6 +1,8 @@
 # Huaci · 划词助手
 
-简洁的原生 macOS 划词翻译与 AI 助手。选中文字，点击「翻译」或「问 AI」，使用你自己的大模型 API。
+一款十分简洁方便的原生 macOS 划词翻译与 AI 助手。
+
+之前下载的划词翻译app都不太让我满意，就自己让GPT写了个，还算不错，太伟大了GPT大人
 
 **当前版本：1.3.7** · macOS 13+ · Apple Silicon / Intel · Swift + AppKit
 
