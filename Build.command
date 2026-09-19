@@ -125,6 +125,7 @@ app_path="$staging_dir/Huaci.app"
 mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources"
 cp "$project_dir/Resources/Info.plist" "$app_path/Contents/Info.plist"
 cp "$project_dir/Resources/AppIcon.icns" "$app_path/Contents/Resources/AppIcon.icns"
+cp "$project_dir/LICENSE" "$app_path/Contents/Resources/LICENSE.txt"
 
 architecture="$(uname -m)"
 sdk_path="$(xcrun --sdk macosx --show-sdk-path)"

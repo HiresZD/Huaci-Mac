@@ -18,10 +18,10 @@
 
 ## 安装
 
-在 [Releases 发布页](https://github.com/foreverdzx/Huaci-Mac/releases) 下载安装包或源码包：
+在 [Releases 发布页](https://github.com/HiresZD/Huaci-Mac/releases) 下载安装包或源码包：
 
 - **Apple Silicon（M 系列）Mac**：下载 `Huaci-Installer-arm64-v1.3.7.dmg`，双击打开，将 Huaci 拖到「应用程序」。启动后配置 API，并授予辅助功能权限。
-- **Intel Mac 或希望自行构建**：下载 `huaci-mac-source-1.3.7.zip`，按下面的步骤编译。构建脚本会生成适合当前 Mac 架构的应用和 DMG。
+- **Intel Mac 或希望自行构建**：下载 `huaci-mac-source-mit-1.3.7.zip`，按下面的步骤编译。构建脚本会生成适合当前 Mac 架构的应用和 DMG。
 
 安装包需要 macOS 13 或更高版本；本次提供的 DMG 仅含 ARM64 应用。
 
@@ -88,4 +88,10 @@ bash Test.command
 | [CHANGELOG.md](CHANGELOG.md) | 各版本更新日志 |
 | [docs/USER_GUIDE.md](docs/USER_GUIDE.md) | 详细使用说明与排错 |
 
-仓库暂未指定开源许可证。
+## 许可证
+
+本项目采用 [MIT 许可证](LICENSE)。Copyright (c) 2026 HiresZD。
+
+允许使用、修改、分发及商业使用；再分发时须保留版权声明和完整许可证文本。软件按原样提供，不作担保。
+
+此授权也适用于已发布的 Huaci 1.3.7。发布页提供 `LICENSE.txt`；重新打包或分发已有安装包时，请一并附上。带 `mit` 的源码包已包含许可证，后续从源码构建的应用也会在资源目录中包含许可证。
