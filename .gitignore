@@ -1,0 +1,28 @@
+# macOS metadata
+.DS_Store
+._*
+__MACOSX/
+
+# Local builds and installers
+.build/
+dist/
+.huaci-build.*/
+*.app/
+*.dmg
+*.zip
+
+# Local credentials and exported records
+.env
+.env.*
+!.env.example
+*.key
+*.p12
+*.pfx
+*.pem
+translation-history.json
+
+# Editor-local state
+.idea/
+.vscode/
+*.xcuserstate
+xcuserdata/

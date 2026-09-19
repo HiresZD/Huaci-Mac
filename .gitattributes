@@ -1,0 +1,10 @@
+* text=auto
+*.swift text eol=lf
+*.command text eol=lf
+*.sh text eol=lf
+*.applescript text eol=lf
+*.md text eol=lf
+*.plist text eol=lf
+*.svg text eol=lf
+*.png binary
+*.icns binary
