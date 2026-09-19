@@ -4,7 +4,7 @@
 
 ## 安装或升级
 
-Apple Silicon（M 系列）Mac 可从 [Releases 发布页](https://github.com/foreverdzx/Huaci-Mac/releases) 下载 `Huaci-Installer-arm64-v1.3.7.dmg`，双击打开并将 Huaci 拖到「应用程序」，再配置 API 与辅助功能权限。安装或替换前先退出正在运行的旧版。本次 DMG 仅含 ARM64 应用，需要 macOS 13 或更高版本。
+Apple Silicon（M 系列）Mac 可从 [Releases 发布页](https://github.com/HiresZD/Huaci-Mac/releases) 下载 `Huaci-Installer-arm64-v1.3.7.dmg`，双击打开并将 Huaci 拖到「应用程序」，再配置 API 与辅助功能权限。安装或替换前先退出正在运行的旧版。本次 DMG 仅含 ARM64 应用，需要 macOS 13 或更高版本。
 
 源码包包含完整 Swift 源码与构建脚本，适合 Intel Mac 或希望自行构建的用户；脚本生成适合当前 Mac 架构的应用。以下步骤用于从源码安装或升级：
 
