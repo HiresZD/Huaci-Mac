@@ -12,6 +12,15 @@
 
 ## 安装
 
-下载带版本号的源码压缩包，解压到独立文件夹，在 Mac 上运行 `bash Build.command`。构建成功后将 DMG 中的 Huaci 拖到「应用程序」。需要 macOS 13+ 和 Apple Command Line Tools，支持在 Apple Silicon 或 Intel Mac 上构建对应架构的应用。
+| 下载文件 | 适用方式 |
+| --- | --- |
+| `Huaci-Installer-arm64-v1.3.7.dmg` | Apple Silicon（M 系列）Mac 直接安装，需要 macOS 13+ |
+| `huaci-mac-source-1.3.7.zip` | 完整源码，支持在 Apple Silicon 或 Intel Mac 上构建对应架构的应用 |
 
-源码压缩包不是已经编译的安装包。应用默认使用本地临时签名，未经过 Apple 公证。1.3.7 尚未在本次交付环境中进行原生编译或界面实测；构建脚本会先执行完整类型检查和本地回归检查。
+**DMG 安装**：先退出旧版，双击 DMG，将 Huaci 拖到「应用程序」。启动后配置 API，并在系统设置中允许辅助功能访问。本次安装包仅含 ARM64 应用，Intel Mac 请使用源码构建。
+
+**源码构建**：解压源码包到独立文件夹，在 Mac 上运行 `bash Build.command`。需要 macOS 13+ 和 Apple Command Line Tools；构建成功后将生成的 DMG 中的 Huaci 拖到「应用程序」。
+
+已检查所提供 DMG 的封装、内置应用版本 1.3.7（构建号 22）、ARM64 架构和最低系统要求。未在本次交付环境中实际运行安装包，也未验证其代码签名或公证状态。源码构建脚本默认使用本地临时签名，会先执行完整类型检查和本地回归检查。
+
+DMG 的 SHA-256：`eb5c1d34bd2142ac45a3e617923ce0a099700050443153c33e15202909df0a1e`。
