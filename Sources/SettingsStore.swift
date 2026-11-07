@@ -7,6 +7,7 @@ struct AppSettings: Codable {
     private(set) var enabled: Bool = true
     private(set) var showMenuBarIcon: Bool = true
     var popupAfterCopy: Bool = false
+    var autoTranslateSelection: Bool = false
     var translationTarget: String = TranslationLanguage.simplifiedChinese.rawValue
     var englishAccent: EnglishAccent = .american
     var profiles: [APIProfile] = [.legacy()]
@@ -18,7 +19,7 @@ struct AppSettings: Codable {
     var historyEnabled: Bool = true
 
     private enum CodingKeys: String, CodingKey {
-        case baseURL, model, enabled, showMenuBarIcon, popupAfterCopy, translationTarget, englishAccent
+        case baseURL, model, enabled, showMenuBarIcon, popupAfterCopy, autoTranslateSelection, translationTarget, englishAccent
         case profiles, translationProfileID, chatProfileID
         case cacheEnabled, cacheMaxEntries, cacheMaxMegabytes, historyEnabled
     }
@@ -35,6 +36,8 @@ struct AppSettings: Codable {
         // Normalize this state on load as well as in all preference mutations.
         if !showMenuBarIcon { enabled = true }
         popupAfterCopy = try values.decodeIfPresent(Bool.self, forKey: .popupAfterCopy) ?? false
+        // Automatic requests are opt-in, including upgrades and malformed preferences.
+        autoTranslateSelection = (try? values.decode(Bool.self, forKey: .autoTranslateSelection)) ?? false
         let target = try values.decodeIfPresent(String.self, forKey: .translationTarget)
         translationTarget = target.flatMap(TranslationLanguage.init(rawValue:))?.rawValue
             ?? TranslationLanguage.simplifiedChinese.rawValue
@@ -171,6 +174,7 @@ final class SettingsStore {
     private(set) var settings: AppSettings
     var onChange: (() -> Void)?
     var onVisibilityChange: (() -> Void)?
+    var onSelectionPreferencesChange: (() -> Void)?
     var onTranslationPreferencesChange: (() -> Void)?
     var onSpeechSettingsChange: (() -> Void)?
 
@@ -294,6 +298,17 @@ final class SettingsStore {
         guard let encoded = try? JSONEncoder().encode(updated) else { return }
         commit(updated, encoded: encoded)
         onChange?()
+    }
+
+    /// A selection preference is independent of credentials, cached translations
+    /// and the current AI conversation. Notify only the selection coordinator.
+    func setAutoTranslateSelection(_ enabled: Bool) {
+        guard settings.autoTranslateSelection != enabled else { return }
+        var updated = settings
+        updated.autoTranslateSelection = enabled
+        guard let encoded = try? JSONEncoder().encode(updated) else { return }
+        commit(updated, encoded: encoded)
+        onSelectionPreferencesChange?()
     }
 
     /// This preference must not emit the configuration-change callback: changing

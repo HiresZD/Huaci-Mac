@@ -26,6 +26,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private let showMenuBarIconButton = NSButton(checkboxWithTitle: "显示菜单栏图标", target: nil, action: nil)
     private let menuBarVisibilityHint = NSTextField(wrappingLabelWithString: "")
     private let popupAfterCopyButton = NSButton(checkboxWithTitle: "复制后显示划词选项（兼容模式）", target: nil, action: nil)
+    private let autoTranslateSelectionButton = NSButton(checkboxWithTitle: "划词后自动翻译", target: nil, action: nil)
     private let englishAccentPopup = NSPopUpButton(frame: .zero, pullsDown: false)
     private let speechStatusLabel = NSTextField(wrappingLabelWithString: "")
     private let speechPreviewButton = NSButton(title: "试听 apple", target: nil, action: nil)
@@ -170,11 +171,17 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             menuBarVisibilityHint
         ], spacing: 7)
 
+        autoTranslateSelectionButton.target = self
+        autoTranslateSelectionButton.action = #selector(autoTranslateSelectionChanged)
+        autoTranslateSelectionButton.state = store.settings.autoTranslateSelection ? .on : .off
+        let autoTranslationGroup = withHelp(autoTranslateSelectionButton,
+            help: "默认关闭，修改后立即保存。开启后，选中文字会直接翻译成当前目标语言；兼容模式下按 ⌘C 读到的文字也会直接翻译。文字会发送给翻译所用的 API，可能产生费用；命中缓存或本机确认源语言与目标语言一致时不请求接口。关闭后恢复「翻译 / 问 AI」选项。")
+
         popupAfterCopyButton.target = self
         popupAfterCopyButton.action = #selector(popupAfterCopyChanged)
         popupAfterCopyButton.state = store.settings.popupAfterCopy ? .on : .off
         let compatibilityGroup = withHelp(popupAfterCopyButton,
-            help: "自动划词继续保留。无法自动取词时，选中文字后按 ⌘C，读取新复制的文字并显示翻译 / 问 AI。点击选项前不发送接口请求。")
+            help: "自动划词继续保留。无法自动取词时，选中文字后按 ⌘C，读取新复制的文字。开启「划词后自动翻译」时直接翻译；关闭时显示「翻译 / 问 AI」，点击选项后才请求接口。不会修改剪贴板内容。")
 
         let pronunciationGroup = buildSpeechInterface()
 
@@ -289,7 +296,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         ], spacing: 10)
 
         let cacheGroup = buildCacheInterface()
-        let sections: [NSView] = [header, visibilityGroup, compatibilityGroup,
+        let sections: [NSView] = [header, visibilityGroup, autoTranslationGroup, compatibilityGroup,
             permissionGroup, separator(), profileGroup, profileNameGroup, address, key, model,
             balanceGroup, footer, roleGroup, separator(), cacheGroup, separator(), pronunciationGroup,
             separator(), quitButton]
@@ -770,6 +777,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         enabledButton.toolTip = visible ? nil : "显示菜单栏图标后，才可以暂停划词助手。"
         showMenuBarIconButton.state = visible ? .on : .off
         popupAfterCopyButton.state = store.settings.popupAfterCopy ? .on : .off
+        autoTranslateSelectionButton.state = store.settings.autoTranslateSelection ? .on : .off
         menuBarVisibilityHint.stringValue = "图标已隐藏，助手保持开启。双击 Huaci.app 可打开设置。"
         menuBarVisibilityHint.isHidden = visible
         resizeForm()
@@ -985,6 +993,16 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         cancelTest()
         cancelBalance()
         NSApp.terminate(nil)
+    }
+
+    @objc private func autoTranslateSelectionChanged() {
+        // Do not reload the form or save an unfinished cache-limit draft when
+        // changing this independent preference. Keep its validation intact.
+        store.setAutoTranslateSelection(autoTranslateSelectionButton.state == .on)
+        autoTranslateSelectionButton.state = store.settings.autoTranslateSelection ? .on : .off
+        setStatus(store.settings.autoTranslateSelection
+            ? "已开启划词后自动翻译，使用当前目标语言和翻译 API。"
+            : "已关闭自动翻译，划词后显示「翻译 / 问 AI」。")
     }
 
     @objc private func popupAfterCopyChanged() {

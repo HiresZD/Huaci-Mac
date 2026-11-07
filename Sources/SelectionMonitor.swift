@@ -10,6 +10,7 @@ final class SelectionMonitor {
     var onUnavailable: ((String) -> Void)?
     var enabled = true
     var popupAfterCopy = false
+    var autoTranslateSelection = false
 
     private var mouseMonitor: Any?
     private var keyMonitor: Any?
@@ -64,17 +65,20 @@ final class SelectionMonitor {
                 self.prepareCopyBaseline(event)
             } else if event.type == .keyDown {
                 let baseline = self.copyBaseline
-                self.invalidate()
+                let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+                let isCopy = modifiers.contains(.command)
+                    && modifiers.intersection([.control, .option, .shift]).isEmpty
+                    && event.charactersIgnoringModifiers?.lowercased() == "c"
+                // Reading a real copy should not cancel and re-send an already
+                // visible automatic translation of the same selection.
+                self.invalidate(dismissPanel: !(self.autoTranslateSelection && self.popupAfterCopy && isCopy))
                 // Escape is an explicit close, including when another app has
                 // focus and the result window is pinned against ambient events.
                 if event.keyCode == 53 {
                     self.onEscape?()
                     return
                 }
-                let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-                if modifiers.contains(.command),
-                   modifiers.intersection([.control, .option, .shift]).isEmpty,
-                   event.charactersIgnoringModifiers?.lowercased() == "c", !event.isARepeat {
+                if isCopy, !event.isARepeat {
                     self.waitForExplicitCopy(baseline: baseline)
                 }
             } else {
@@ -106,12 +110,12 @@ final class SelectionMonitor {
         invalidate()
     }
 
-    func invalidate() {
+    func invalidate(dismissPanel: Bool = true) {
         generation += 1
         copyTask?.cancel()
         copyTask = nil
         copyBaseline = nil
-        onDismiss?()
+        if dismissPanel { onDismiss?() }
     }
 
     private func prepareCopyBaseline(_ event: NSEvent) {
@@ -245,7 +249,7 @@ final class SelectionMonitor {
 
         readAfterDelay(pid: pid, requestID: requestID, point: point, accessibilityPoint: accessibilityPoint,
                        explicit: explicit, prepare: prepare, retryIfEmpty: true,
-                       retryDelay: prepare ? 2.2 : 0.24, delay: 0.14)
+                       retryDelay: prepare ? 2.2 : 0.24, delay: autoTranslateSelection ? 0.3 : 0.14)
     }
 
     private func readAfterDelay(pid: pid_t, requestID: Int, point: NSPoint, accessibilityPoint: CGPoint?,

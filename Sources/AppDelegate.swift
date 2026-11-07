@@ -48,6 +48,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         configureStatusMenu()
         selectionMonitor.enabled = store.settings.enabled
         selectionMonitor.popupAfterCopy = store.settings.popupAfterCopy
+        selectionMonitor.autoTranslateSelection = store.settings.autoTranslateSelection
         selectionMonitor.onSelection = { [weak self] text, point in self?.offer(text: text, near: point) }
         selectionMonitor.onDismiss = { [weak self] in
             guard let self, !self.panel.isPinned else { return }
@@ -117,6 +118,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             self.selectionMonitor.enabled = self.store.settings.enabled
             self.updateMenu()
         }
+        store.onSelectionPreferencesChange = { [weak self] in
+            guard let self else { return }
+            self.selectionMonitor.autoTranslateSelection = self.store.settings.autoTranslateSelection
+            // Cancel a queued selection when the trigger changes, while leaving
+            // the translation cache and any AI conversation intact.
+            self.selectionMonitor.invalidate()
+        }
         store.onChange = { [weak self] in
             guard let self = self else { return }
             // Credential changes must invalidate hits even when the URL/model
@@ -124,6 +132,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             self.translationCache.removeAll()
             self.selectionMonitor.enabled = self.store.settings.enabled
             self.selectionMonitor.popupAfterCopy = self.store.settings.popupAfterCopy
+            self.selectionMonitor.autoTranslateSelection = self.store.settings.autoTranslateSelection
             self.selectionMonitor.invalidate()
             self.dismissPanel()
             self.stopChatGeneration()
@@ -301,13 +310,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func offer(text: String, near point: NSPoint) {
         guard store.settings.enabled, !panel.isPinned else { return }
+        // Compatibility mode may deliver the same selection again after Cmd-C.
+        // Keep a visible result/request; a fresh mouse selection dismisses it
+        // first, so intentionally selecting the same text again still works.
+        if store.settings.autoTranslateSelection, panel.isVisible, selectedText == text { return }
         dismissPanel()
         selectedText = text
         selectedPoint = point
-        panel.showActions(near: point)
+        if store.settings.autoTranslateSelection {
+            run(mode: .translate, near: point)
+        } else {
+            panel.showActions(near: point)
+        }
     }
 
-    private func run(mode: CompletionMode, bypassCache: Bool = false) {
+    private func run(mode: CompletionMode, bypassCache: Bool = false, near point: NSPoint? = nil) {
         if mode == .ask { openChatFromSelection(); return }
         guard !selectedText.isEmpty else { return }
         task?.cancel()
@@ -324,7 +341,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         currentTranslation = nil
         let language = TranslationLanguage(rawValue: store.settings.translationTarget) ?? .simplifiedChinese
         panel.setTargetLanguage(language)
-        panel.showResult(mode: mode)
+        panel.showResult(mode: mode, near: point)
         guard store.settings.enabled else { panel.showError("划词助手已暂停。"); return }
         task = Task { [weak self] in
             do {

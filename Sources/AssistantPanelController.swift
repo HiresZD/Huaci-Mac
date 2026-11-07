@@ -187,14 +187,21 @@ final class AssistantPanelController: NSObject {
         panel.orderFrontRegardless()
     }
 
-    func showResult(mode: CompletionMode) {
+    func showResult(mode: CompletionMode, near point: NSPoint? = nil) {
+        // A direct translation has no preceding action strip to set its anchor.
+        // Retries and language changes omit this argument to keep their position.
+        if let point {
+            anchor = point
+            resultPlacement = nil
+            setPinned(false)
+        }
         setFavoriteState(available: false, isFavorite: false)
         resetDictionaryHeader()
         cancelScheduledLayout()
         pendingText = ""
         displayingDictionary = false
         if mode != .translate { setPinned(false) }
-        if panel.contentView !== resultView || !panel.isVisible {
+        if resultPlacement == nil || panel.contentView !== resultView || !panel.isVisible {
             resultPlacement = makeResultPlacement()
         }
         displayedMode = mode
